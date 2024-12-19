@@ -12,7 +12,7 @@ LFLAGS = -lnfnetlink -lrt -lcap -lpthread
 TARGETBINS = ident2d
 TARGETLIBS = libident2_precache.so
 
-all: ident2d
+all: ident2d ident2d.service
 
 ident2d:
 	$(CC) $(CFLAGS) ident2d.c log.c findsocket.c config.c -o ident2d $(LFLAGS)
@@ -29,19 +29,22 @@ ident2d-debug:
 	$(STRIP) --strip-debug --strip-unneeded libident2_precache.so
 	objcopy --add-gnu-debuglink=libident2_precache.so.debug libident2_precache.so
 
+ident2d.service: ident2d.service.in
+	sed 's|@PREFIX@|$(PREFIX)|g' ident2d.service.in > ident2d.service
+
 .PHONY: install
-install: $(TARGETS)
-	install -m 0755 -d $(DESTDIR)$(PREFIX)/bin
-	install -m 0755 $(TARGETBINS) $(DESTDIR)$(PREFIX)/bin
+install: $(TARGETS) install-service
+	install -m 0755 -d $(DESTDIR)$(PREFIX)/sbin
+	install -m 0755 $(TARGETBINS) $(DESTDIR)$(PREFIX)/sbin
 	install -m 0755 -d $(DESTDIR)$(PREFIX)/lib/x86_64-linux-gnu
 	install -m 0755 $(TARGETLIBS) $(DESTDIR)$(PREFIX)/lib/x86_64-linux-gnu
 	install -m 0755 -d $(DESTDIR)/etc/systemd/system
 	install -m 0644 ident2d.service $(DESTDIR)/etc/systemd/system
 	install -m 0644 ident2d.conf $(DESTDIR)/etc
 
-
 clean:
-	$(RM) -rf ident2d libident2_precache.so libident2_precache.so.debug ident2d.debug debian/ident2d* debian/.debhelper
+	$(RM) -rf ident2d ident2d.service libident2_precache.so libident2_precache.so.debug ident2d.debug debian/ident2d* debian/.debhelper
 
 deb:
 	dpkg-buildpackage -b -rfakeroot -us -uc
+

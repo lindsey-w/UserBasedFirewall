@@ -1,0 +1,17 @@
+## Example firewalld direct rules for ipv4 and ipv6
+# Allow established and related connections
+firewall-cmd --direct --add-rule ipv4 filter INPUT 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+firewall-cmd --direct --add-rule ipv6 filter INPUT 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Queue new TCP connections on ports 1024 and above
+firewall-cmd --direct --add-rule ipv4 filter INPUT 1 -m state --state NEW -p tcp --dport 1024: -j NFQUEUE --queue-num 0
+firewall-cmd --direct --add-rule ipv6 filter INPUT 1 -m state --state NEW -p tcp --dport 1024: -j NFQUEUE --queue-num 0
+
+# Queue new UDP connections on ports 1024 and above
+firewall-cmd --direct --add-rule ipv4 filter INPUT 2 -m state --state NEW -p udp --dport 1024: -j NFQUEUE --queue-num 0
+firewall-cmd --direct --add-rule ipv6 filter INPUT 2 -m state --state NEW -p udp --dport 1024: -j NFQUEUE --queue-num 0
+
+# Accept all other input
+firewall-cmd --direct --add-rule ipv4 filter INPUT 3 -j ACCEPT
+firewall-cmd --direct --add-rule ipv6 filter INPUT 3 -j ACCEPT
+
