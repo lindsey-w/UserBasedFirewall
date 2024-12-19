@@ -33,7 +33,7 @@ ident2d.service: ident2d.service.in
 	sed 's|@PREFIX@|$(PREFIX)|g' ident2d.service.in > ident2d.service
 
 .PHONY: install
-install: $(TARGETS) install-service
+install: $(TARGETS) 
 	install -m 0755 -d $(DESTDIR)$(PREFIX)/sbin
 	install -m 0755 $(TARGETBINS) $(DESTDIR)$(PREFIX)/sbin
 	install -m 0755 -d $(DESTDIR)$(PREFIX)/lib/x86_64-linux-gnu
